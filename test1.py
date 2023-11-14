@@ -1,3 +1,4 @@
+#I will begin working on the project
 import sys, pygame
 pygame.init()
 
