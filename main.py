@@ -2,12 +2,15 @@ import pygame, sys
 from player import Player
 #from player.py import Player class ^
 
+
+#renamed clearcode example to main.py to better align with the example
 class Game:
     def __init__(self):
-        player_sprite = Player((300,300))
+        player_sprite = Player((screen_width/2,screen_height),screen_width,5) #player at bottom middle screen, boundaryWidth, playerspeed
         self.player = pygame.sprite.GroupSingle(player_sprite)
 
     def run(self):
+        self.player.update()
         self.player.draw(screen)
         #update all sprite groups
         #draw all sprite groups
@@ -27,7 +30,7 @@ while True:
             pygame.quit()
             sys.exit()
 
-        screen.fill((30,30,30))
-        game.run() #this allos us to write the logic in the game class
-        pygame.display.flip()
-        clock.tick(60)
+    screen.fill((30,30,30))
+    game.run() #this allos us to write the logic in the game class
+    pygame.display.flip()
+    clock.tick(60)
