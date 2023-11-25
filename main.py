@@ -6,7 +6,7 @@ from player import Player
 #renamed clearcode example to main.py to better align with the example
 class Game:
     def __init__(self): 
-        player_sprite = Player((screen_width/2,screen_height),screen_width,5) #player at bottom middle screen, boundaryWidth, playerspeed
+        player_sprite = Player((screen_width/2,screen_height),screen_width,screen_height, 5) #player at bottom middle screen, boundaryWidth, playerspeed
         self.player = pygame.sprite.GroupSingle(player_sprite)
 
     def run(self):

@@ -2,7 +2,7 @@ import pygame
 from laser import Laser
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self,pos,constraint,speed):
+    def __init__(self,pos,constraint,yconstraint,speed):
         super().__init__()
         self.image = pygame.image.load('../graphics/player.png').convert_alpha()  
         self.rect = self.image.get_rect(midbottom = pos)
@@ -12,6 +12,7 @@ class Player(pygame.sprite.Sprite):
         self.laser_time = 0
         self.laser_cooldown = 600
         self.lasers = pygame.sprite.Group()
+        self.max_y_constraint = yconstraint
 
     def get_input(self):
         keys = pygame.key.get_pressed()
@@ -49,7 +50,7 @@ class Player(pygame.sprite.Sprite):
        
 
     def shoot_laser(self):
-        self.lasers.add(Laser(self.rect.center,-8,self.rect.bottom))
+        self.lasers.add(Laser(self.rect.center,-8,self.max_y_constraint)) 
 
     def update(self):
         self.get_input()
