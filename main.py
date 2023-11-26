@@ -1,18 +1,36 @@
 import pygame, sys
 from player import Player
 #from player.py import Player class ^
-
+import obstacle
 
 #renamed clearcode example to main.py to better align with the example
 class Game:
     def __init__(self): 
+        #playersetup
         player_sprite = Player((screen_width/2,screen_height),screen_width,screen_height, 5) #player at bottom middle screen, boundaryWidth, playerspeed
         self.player = pygame.sprite.GroupSingle(player_sprite)
+
+        #obstacle setup
+        self.shape = obstacle.shape
+        self.block_size = 6
+        self.blocks = pygame.sprite.Group()
+        self.create_obstacle()
+
+    def create_obstacle(self):
+        for row_index, row in enumerate(self.shape):
+            for col_index, col in enumerate(row):
+                if col =='x':
+                    x = col_index * self.block_size
+                    y = row_index * self.block_size
+                    block = obstacle.Block(self.block_size,(241,79,80),x,y)
+                    self.blocks.add(block)
 
     def run(self):
         self.player.sprite.lasers.draw(screen)
         self.player.update()
         self.player.draw(screen)
+    
+        self.blocks.draw(screen)
         #update all sprite groups
         #draw all sprite groups
 
