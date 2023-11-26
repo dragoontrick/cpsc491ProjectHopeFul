@@ -7,6 +7,9 @@ class Alien(pygame.sprite.Sprite):
         self.image = pygame.image.load(file_path).convert_alpha()
         self.rect = self.image.get_rect(topleft = (x,y))
 
+        if color == 'red': self.value = 10
+        elif color == 'green': self.value = 20
+        else: self.value = 50
     def update(self,direction):
         self.rect.x += direction
 

@@ -13,6 +13,13 @@ class Game:
         player_sprite = Player((screen_width/2,screen_height),screen_width,screen_height, 5) #player at bottom middle screen, boundaryWidth, playerspeed
         self.player = pygame.sprite.GroupSingle(player_sprite)
 
+        #health and score setup
+        self.lives = 3
+        self.live_surf = pygame.image.load('../graphics/player.png').convert_alpha()#maybe change playerpng to the miniplayerpng
+        self.live_x_start_pos = screen_width - (self.live_surf.get_size()[0] * 2 + 20)
+        self.score = 0
+        self.font = pygame.font.Font('../font/Pixeled.ttf',20)
+
         #obstacle setup
         self.shape = obstacle.shape
         self.block_size = 6
@@ -30,6 +37,15 @@ class Game:
         #extra setup
         self.extra = pygame.sprite.GroupSingle()
         self.extra_spawn_time = randint(40,80)
+
+        #audio
+        music = pygame.mixer.Sound('../audio/music.wav')
+        music.set_volume(0.1)
+        music.play(loops = -1)
+        self.laser_sound = pygame.mixer.Sound('../audio/laser.wav')
+        self.laser_sound.set_volume(0.3)
+        self.explosion_sound = pygame.mixer.Sound('../audio/explosion.wav')
+        self.explosion_sound.set_volume(0.2)
 
 
     def create_obstacle(self, x_start, y_start, offset_x):
@@ -76,6 +92,7 @@ class Game:
             random_alien = choice(self.aliens.sprites())
             laser_sprite = Laser(random_alien.rect.center,6,screen_height) 
             self.alien_lasers.add(laser_sprite)
+            self.laser_sound.play()
             
     def extra_alien_timer(self):
         self.extra_spawn_time -= 1
@@ -83,28 +100,95 @@ class Game:
             self.extra.add(Extra(choice(['right','left']), screen_width))
             self.extra_spawn_time = randint(400,800)
 
+    def collision_checks(self):
+        #player lasers
+        if self.player.sprite.lasers:
+            for laser in self.player.sprite.lasers:
+                #obstacle collision
+                if pygame.sprite.spritecollide(laser,self.blocks,True):
+                    laser.kill()
+
+                #alien collision
+                aliens_hit = pygame.sprite.spritecollide(laser,self.aliens,True)
+                if aliens_hit:
+                    for alien in aliens_hit:
+                        self.score += alien.value
+                    laser.kill() #if false then we get "pierce" through effect can be used as a damage lever
+                    self.explosion_sound.play()
+
+                  
+
+                #extra collision
+                if pygame.sprite.spritecollide(laser,self.extra,True):
+                    self.score += 150
+                    laser.kill()
+                    self.explosion_sound.play()
+
+
+        #alien lasers
+        if self.alien_lasers:
+            for laser in self.alien_lasers:
+                #obstacle collision
+                if pygame.sprite.spritecollide(laser,self.blocks,True):
+                    laser.kill()
+
+                #player collision
+                if pygame.sprite.spritecollide(laser,self.player,False):
+                    laser.kill()
+                    self.lives -= 1
+                    if self.lives <= 0:
+                        pygame.quit()
+                        sys.exit()
+
+        #aliens
+        if self.aliens: 
+            for alien in self.aliens:
+                pygame.sprite.spritecollide(alien,self.blocks,True)
+                if pygame.sprite.spritecollide(alien,self.player,False):
+                    pygame.quit()
+                    sys.exit()
+
+    def display_lives(self):
+        for live in range(self.lives -1):
+            x = self.live_x_start_pos + (live * (self.live_surf.get_size()[0] + 10))
+            screen.blit(self.live_surf,(x,8))
+
+    def display_score(self):
+        score_surf = self.font.render(f'score: {self.score}',False,'white')
+        score_rect = score_surf.get_rect(topleft = (10,-10))
+        screen.blit(score_surf,score_rect)
+
+    def victory_message(self):
+        if not self.aliens.sprites():
+            victory_surf = self.font.render('Victory', False, 'white')
+            victory_rect = victory_surf.get_rect(center = (screen_width/2, screen_height/2))
+            screen.blit(victory_surf,victory_rect)
+
     def run(self):
         self.player.update()
-        self.aliens.update(self.alien_direction)
-        self.alien_position_checker()
         self.alien_lasers.update()
-        self.extra_alien_timer()
         self.extra.update()
 
+        self.aliens.update(self.alien_direction)
+        self.alien_position_checker()
+        self.extra_alien_timer()
+        self.collision_checks()
+        
         self.player.sprite.lasers.draw(screen)
         self.player.draw(screen)
-    
         self.blocks.draw(screen)
         self.aliens.draw(screen)
         self.alien_lasers.draw(screen)       
         self.extra.draw(screen) 
-        #update all sprite groups
-        #draw all sprite groups
+        self.display_lives()
+        self.display_score()
+        self.victory_message()
+     
 
 if __name__ == '__main__':
-    pygame.init()
-    screen_width = 600
-    screen_height = 600
+    pygame.init() 
+    screen_width = 1000
+    screen_height = 800
     screen = pygame.display.set_mode((screen_width,screen_height))
     clock = pygame.time.Clock()
     game = Game()
