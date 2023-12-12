@@ -8,6 +8,7 @@ Thank you to wubitog and Skorpio   (http://opengameart.org/users/skorpio ) for t
 Thank you for the laser effect StarNinjas Youtube channel: https://www.youtube.com/channel/UCxLPx862bQqxGUOkfZOtvZA CC 1.0 Deed
 
 Built and tested in Ubuntu 22.04 LTS. 
-Requirements: Have python installed on your device.
-From github, you can clone the repository to your local device.
-Then you can use the command python3 main.py in order to run the game. 
+1) Requirements: Have python installed on your device.
+2) From github, you can clone the repository to your local device.
+3) Open the terminal and navigate to the folder containing the main.py file
+4) Use the command "python3 main.py" (without the quotations) in order to run the game. 
